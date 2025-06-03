@@ -2,7 +2,7 @@ import Ticket from '../models/Ticket.js';
 import { uploadImageToCloudinary } from '../utils/cloudinary.js';
 
 // Create new ticket
-export const createTicketWithImage = async (req, res) => {
+export const createTicket = async (req, res) => {
     try {
         const { subject, description } = req.body;
         if (!subject || !description)
