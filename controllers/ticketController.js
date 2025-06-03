@@ -38,17 +38,17 @@ export const uploadScreenshotToTicket = async (req, res) => {
         if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
 
         // Upload image file to Cloudinary using helper function
-        const { url, public_id } = await uploadImageToCloudinary(req.file.path);
+        const imageData = await uploadImageToCloudinary(req.file.path);
 
         // Find ticket and add screenshot info
         const ticket = await Ticket.findById(ticketId);
         if (!ticket) return res.status(404).json({ message: 'Ticket not found' });
 
-        ticket.screenshots.push({ url, public_id });
+        ticket.screenshots.push(imageData);
         ticket.updatedAt = Date.now();
         await ticket.save();
 
-        res.status(201).json({ message: 'Screenshot uploaded', screenshot: { url, public_id } });
+        res.status(201).json({ message: 'Screenshot uploaded', screenshot: imageData });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
