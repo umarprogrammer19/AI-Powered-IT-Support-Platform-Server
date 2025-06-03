@@ -19,15 +19,11 @@ const ticketSchema = new mongoose.Schema({
         enum: ['open', 'in_progress', 'resolved', 'closed'],
         default: 'open'
     },
-    screenshots: [
-        {
-            url: String,
-            public_id: String,
-        }
-    ],
+    screenshots: [String],
     replies: [{
         sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
         message: { type: String, required: true },
+        screenshots: [String],
         createdAt: { type: Date, default: Date.now }
     }],
     createdAt: { type: Date, default: Date.now },
