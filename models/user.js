@@ -34,13 +34,13 @@ const userSchema = new mongoose.Schema({
         expiryDate: {
             type: Date
         },
+        // to link with RevenueCat
         revenueCatCustomerId: {
             type: String
-        } // to link with RevenueCat
+        }
     }
 }, { timestamps: true });
 
-// Hash password before saving
 userSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();
     try {
@@ -52,7 +52,6 @@ userSchema.pre('save', async function (next) {
     }
 });
 
-// Method to check password validity
 userSchema.methods.comparePassword = async function (candidatePassword) {
     return bcrypt.compare(candidatePassword, this.password);
 };
