@@ -19,11 +19,12 @@ const ticketSchema = new mongoose.Schema({
         enum: ['open', 'in_progress', 'resolved', 'closed'],
         default: 'open'
     },
-    priority: {
-        type: String,
-        enum: ['low', 'medium', 'high'],
-        default: 'medium'
-    },
+    screenshots: [
+        {
+            url: String,
+            public_id: String,
+        }
+    ],
     replies: [{
         sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
         message: { type: String, required: true },
