@@ -87,7 +87,14 @@ export const addReplyToTicket = async (req, res) => {
         const ticket = await Ticket.findById(req.params.id);
         if (!ticket) return res.status(404).json({ message: 'Ticket not found' });
 
-        ticket.replies.push({ sender: req.userId, message });
+        let screenshots = [];
+
+        if (req.file) {
+            const imageData = await uploadImageToCloudinary(req.file.path);
+            screenshots.push(imageData);
+        }
+
+        ticket.replies.push({ sender: req.userId, message, screenshots });
         ticket.updatedAt = Date.now();
         await ticket.save();
 

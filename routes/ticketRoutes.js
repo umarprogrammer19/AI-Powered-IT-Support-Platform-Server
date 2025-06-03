@@ -18,7 +18,7 @@ router.get('/', getUserTickets);
 router.post('/', upload.single("image"), createTicket);
 router.get('/:id', getTicketById);
 router.post('/:id/upload', upload.single('image'), uploadScreenshotToTicket);
-router.post('/:id/reply', addReplyToTicket);
+router.post('/:id/reply', upload.single("image"), addReplyToTicket);
 router.patch('/:id/status', adminMiddleware, updateTicketStatus);
 
 export default router;
