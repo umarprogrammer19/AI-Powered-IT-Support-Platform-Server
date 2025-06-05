@@ -52,7 +52,7 @@ export const deleteFAQ = async (req, res) => {
         const faq = await FAQ.findById(req.params.id);
         if (!faq) return res.status(404).json({ message: 'FAQ not found' });
 
-        await faq.remove();
+        await FAQ.findByIdAndDelete(req.params.id);
         res.json({ message: 'FAQ deleted' });
     } catch (error) {
         res.status(500).json({ message: error.message });
