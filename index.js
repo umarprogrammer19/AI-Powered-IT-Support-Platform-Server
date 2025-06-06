@@ -18,7 +18,5 @@ app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/faqs', faqRoutes);
 app.use('/api/conversations', conversationRoutes);
 
-const PORT = process.env.PORT || 8000;
-
-connectdb().then(() => app.listen(PORT, () => console.log(`Server running on port ${PORT}`)))
+connectdb().then(() => app.listen(process.env.PORT, () => console.log(`Server running on port ${process.env.PORT}`)))
     .catch(err => console.error(err));
