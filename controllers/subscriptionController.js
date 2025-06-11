@@ -1,6 +1,6 @@
 import Subscription from '../models/subscription.js';
 
-// Get current user subscription status
+// Get current user subscription status (use revenue cat later)
 export const getSubscriptionStatus = async (req, res) => {
     try {
         const subscription = await Subscription.findOne({ user: req.userId }).sort({ startDate: -1 });
