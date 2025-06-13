@@ -1,26 +1,23 @@
-import stripe from 'stripe';
 import axios from 'axios';
-import Subscription from '../models/subscription.js';  
 import dotenv from 'dotenv';
+import Stripe from 'stripe';
 
 dotenv.config();
 
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
-const REVENUECAT_API_KEY = process.env.REVENUECAT_API_KEY;
-const REVENUECAT_BASE_URL = 'https://api.revenuecat.com/v1/subscribers/';
-const stripeClient = stripe(STRIPE_SECRET_KEY);
+const stripeClient = Stripe(STRIPE_SECRET_KEY);
 
 export const createPaymentIntent = async (req, res) => {
     try {
-        const { amount } = req.body; 
+        const { amount } = req.body;
 
         if (!amount) {
             return res.status(400).json({ message: 'Amount is required' });
         }
 
         const paymentIntent = await stripeClient.paymentIntents.create({
-            amount: amount,  
-            currency: 'usd', 
+            amount: amount,
+            currency: 'usd',
             metadata: { integration_check: 'accept_a_payment' },
         });
 
@@ -34,9 +31,9 @@ export const createPaymentIntent = async (req, res) => {
 
 export const handlePaymentSuccess = async (req, res) => {
     try {
-        const { paymentIntentId, userId, plan, revenueCatCustomerId } = req.body;
+        const { paymentIntentId, userId, plan } = req.body;
 
-        if (!paymentIntentId || !userId || !plan || !revenueCatCustomerId) {
+        if (!paymentIntentId || !userId || !plan) {
             return res.status(400).json({ message: 'Missing required fields' });
         }
 
@@ -47,37 +44,21 @@ export const handlePaymentSuccess = async (req, res) => {
             return res.status(400).json({ message: 'Payment failed' });
         }
 
-        // Send data to RevenueCat to create/update subscription
-        const response = await axios.post(
-            `${REVENUECAT_BASE_URL}${revenueCatCustomerId}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${REVENUECAT_API_KEY}`,
-                },
-                data: {
-                    plan: plan,         
-                    status: 'active',    
-                },
-            }
-        );
-
-        const subscriptionData = response.data;
-
-        // Save the subscription to database
+        // Save the subscription to your database (without RevenueCat)
         const subscription = new Subscription({
             user: userId,
             plan: plan,
             status: 'active',
-            revenueCatSubscriptionId: revenueCatCustomerId,
-            startDate: subscriptionData.created_at,
-            expiryDate: subscriptionData.expiry_date,
-            lastPaymentDate: subscriptionData.latest_purchase_date,
+            startDate: new Date().toISOString(),
+            expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // Assuming 1 month subscription
+            lastPaymentDate: new Date().toISOString(),
         });
 
         await subscription.save();
 
         res.status(201).json({ message: 'Payment successful and subscription created', subscription });
     } catch (error) {
+        console.error('Error processing payment or creating subscription:', error);
         res.status(500).json({ message: 'Error processing payment or creating subscription', error: error.message });
     }
 };
