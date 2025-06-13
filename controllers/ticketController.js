@@ -1,5 +1,11 @@
 import Ticket from '../models/Ticket.js';
 import { uploadImageToCloudinary } from '../utils/cloudinary.js';
+import { ElevenLabs } from 'elevenlabs';
+
+// Configure ElevenLabs API
+const elevenLabs = new ElevenLabs({
+    apiKey: process.env.ELEVENLABS_API_KEY,
+});
 
 // Create new ticket
 export const createTicket = async (req, res) => {
@@ -120,6 +126,40 @@ export const updateTicketStatus = async (req, res) => {
         await ticket.save();
 
         res.json(ticket);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Function to convert text to speech
+export const generateVoiceResponse = async (text) => {
+    try {
+        const voiceData = await elevenLabs.textToSpeech(text);
+        return voiceData.audioUrl; // Returns URL to audio
+    } catch (error) {
+        throw new Error('Voice generation failed: ' + error.message);
+    }
+};
+
+// Usage in adding AI response to ticket
+export const addReplyToTicketWithVoice = async (req, res) => {
+    try {
+        const { message } = req.body;
+        if (!message) return res.status(400).json({ message: 'Message required' });
+
+        const ticket = await Ticket.findById(req.params.id);
+        if (!ticket) return res.status(404).json({ message: 'Ticket not found' });
+
+        // Generate AI response (for example)
+        const aiResponse = "Here's the solution to your problem: Restart your router and check your cables.";
+        const audioUrl = await generateVoiceResponse(aiResponse);
+
+        // Add reply to ticket with voice URL
+        ticket.replies.push({ sender: req.userId, message: aiResponse, audioUrl });
+        ticket.updatedAt = Date.now();
+        await ticket.save();
+
+        res.status(201).json(ticket);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
