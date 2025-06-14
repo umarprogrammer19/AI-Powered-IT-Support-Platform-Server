@@ -9,7 +9,7 @@ dotenv.config();
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?';
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
-// Helper to base64-encode a file
+// Helper to base64-encode a file in base64
 function base64Encode(filePath) {
     return fs.readFileSync(filePath, 'base64');
 }
@@ -36,7 +36,6 @@ export const chatWithGemini = async (userMessage, imagePath = '') => {
             });
         }
 
-        // Call Gemini API
         const response = await axios.post(
             `${GEMINI_API_URL}key=${GEMINI_API_KEY}`,
             data,
@@ -47,7 +46,7 @@ export const chatWithGemini = async (userMessage, imagePath = '') => {
             }
         );
 
-        // Extract Gemini's response text
+        // Extract Gemini Text
         return response.data.candidates[0].content.parts[0].text.trim();
 
     } catch (error) {
@@ -59,17 +58,14 @@ export const chatWithGemini = async (userMessage, imagePath = '') => {
 export const handleChat = async (req, res) => {
     try {
         const { message } = req.body;
-        // If you are uploading an image, it might be in req.file
+
         const imagePath = req.file ? req.file.path : '';
 
         if (!message) {
             return res.status(400).json({ message: 'User ID and message are required' });
         }
 
-        // Get the response from Gemini
         const geminiResponse = await chatWithGemini(message, imagePath);
-
-        // Save conversation to database
         let conversation = await Conversation.findOne({ userId });
 
         if (!conversation) {
