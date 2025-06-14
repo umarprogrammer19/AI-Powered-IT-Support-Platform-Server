@@ -1,9 +1,10 @@
 import Ticket from '../models/Ticket.js';
 import { uploadImageToCloudinary } from '../utils/cloudinary.js';
-import { ElevenLabs } from 'elevenlabs';
+import { ElevenLabsClient } from 'elevenlabs';
+import { chatWithGemini } from './conversationController.js';
 
 // Configure ElevenLabs API
-const elevenLabs = new ElevenLabs({
+const elevenLabs = new ElevenLabsClient({
     apiKey: process.env.ELEVENLABS_API_KEY,
 });
 
@@ -151,7 +152,7 @@ export const addReplyToTicketWithVoice = async (req, res) => {
         if (!ticket) return res.status(404).json({ message: 'Ticket not found' });
 
         // Generate AI response (for example)
-        const aiResponse = "Here's the solution to your problem: Restart your router and check your cables.";
+        const aiResponse = await chatWithGemini(message);
         const audioUrl = await generateVoiceResponse(aiResponse);
 
         // Add reply to ticket with voice URL
