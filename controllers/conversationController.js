@@ -14,7 +14,7 @@ function base64Encode(filePath) {
     return fs.readFileSync(filePath, 'base64');
 }
 
-const chatWithGemini = async (userMessage, imagePath = '') => {
+export const chatWithGemini = async (userMessage, imagePath = '') => {
     try {
         // Prepare data for Gemini API
         const data = {
