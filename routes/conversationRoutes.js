@@ -7,6 +7,6 @@ const router = express.Router();
 // Middlware
 router.use(protect);
 router.post('/ai/chat', handleChat);
-router.get('/history/:userId', getConversationHistory);
+router.get('/history', getConversationHistory);
 
 export default router;
