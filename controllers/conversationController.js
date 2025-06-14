@@ -15,7 +15,6 @@ function base64Encode(filePath) {
 
 export const chatWithGemini = async (userMessage, imagePath = '') => {
     try {
-        // Prepare data for Gemini API
         const data = {
             contents: [
                 {
@@ -24,10 +23,8 @@ export const chatWithGemini = async (userMessage, imagePath = '') => {
             ]
         };
 
-        // Add user message to the parts
         data.contents[0].parts.push({ text: userMessage });
 
-        // If image is provided, add it to the request as well
         if (imagePath) {
             const base64Image = base64Encode(imagePath);
             data.contents[0].parts.push({
@@ -38,7 +35,6 @@ export const chatWithGemini = async (userMessage, imagePath = '') => {
             });
         }
 
-        // Make the POST request to the Gemini API
         const response = await axios.post(
             `${GEMINI_API_URL}key=${GEMINI_API_KEY}`,
             data,
@@ -49,7 +45,6 @@ export const chatWithGemini = async (userMessage, imagePath = '') => {
             }
         );
 
-        // Check if the response is valid and has the expected structure
         if (response.data && response.data.candidates && response.data.candidates[0].content) {
             return response.data.candidates[0].content.parts[0].text.trim();
         } else {
@@ -66,7 +61,6 @@ export const handleChat = async (req, res) => {
     try {
         const { message } = req.body;
 
-        // Ensure user message is provided
         if (!message || message.trim() === '') {
             return res.status(400).json({ message: 'User message is required' });
         }
@@ -74,18 +68,14 @@ export const handleChat = async (req, res) => {
         const userId = req.userId;
         const imagePath = req.file ? req.file.path : '';
 
-        // Get response from Gemini
         const geminiResponse = await chatWithGemini(message, imagePath);
 
-        // Ensure Gemini response is valid
         if (!geminiResponse || geminiResponse.trim() === '') {
             return res.status(500).json({ message: 'AI response is empty or invalid' });
         }
 
-        // Check if conversation exists in the database
         let conversation = await Conversation.findOne({ userId });
 
-        // If conversation does not exist, create a new one
         if (!conversation) {
             conversation = new Conversation({
                 user: userId,
@@ -95,15 +85,12 @@ export const handleChat = async (req, res) => {
                 ]
             });
         } else {
-            // If conversation exists, push the new messages
             conversation.messages.push({ sender: 'user', text: message });
             conversation.messages.push({ sender: 'ai', text: geminiResponse });
         }
 
-        // Save the conversation in the database
         await conversation.save();
 
-        // Respond with the AI message
         res.status(200).json({ message: geminiResponse });
 
     } catch (error) {
@@ -116,14 +103,12 @@ export const getConversationHistory = async (req, res) => {
     try {
         const userId = req.userId;
 
-        // Find the conversation for the given user
         const conversation = await Conversation.findOne({ user: userId });
 
         if (!conversation) {
             return res.status(404).json({ message: 'Conversation not found' });
         }
 
-        // Respond with the conversation history
         res.status(200).json(conversation);
 
     } catch (error) {
