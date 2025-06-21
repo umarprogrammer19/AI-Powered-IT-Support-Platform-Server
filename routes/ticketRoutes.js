@@ -13,7 +13,10 @@ import adminMiddleware from '../middleware/adminMiddleware.js';
 
 const router = express.Router();
 
+// This Middleware protects the routes from unauthorized users
 router.use(protect);
+
+// Routes
 router.get('/', getUserTickets);
 router.post('/', upload.single("image"), createTicket);
 router.get('/:id', getTicketById);
