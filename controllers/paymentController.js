@@ -6,6 +6,7 @@ dotenv.config();
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 const stripeClient = Stripe(STRIPE_SECRET_KEY);
 
+// For Creating a payment intent for stripe 
 export const createPaymentIntent = async (req, res) => {
     try {
         const { amount } = req.body;
@@ -27,6 +28,7 @@ export const createPaymentIntent = async (req, res) => {
         res.status(500).json({ message: 'Error creating payment intent', error: error.message });
     }
 };
+
 
 export const handlePaymentSuccess = async (req, res) => {
     try {
