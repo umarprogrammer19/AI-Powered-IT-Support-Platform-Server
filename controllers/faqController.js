@@ -1,6 +1,6 @@
 import FAQ from '../models/faq.js';
 
-// Get all FAQs (optionally filter by tag)
+// Get all FAQs (optionally filter by tags)
 export const getAllFAQs = async (req, res) => {
     try {
         const { tag } = req.query;

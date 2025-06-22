@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.use(protect);
 
+// For Getting An Status
 router.get('/status', getSubscriptionStatus);
 // Route to create payment intent
 router.post('/create-payment-intent', createPaymentIntent);
