@@ -9,6 +9,7 @@ import conversationRoutes from './routes/conversationRoutes.js';
 
 const app = express();
 
+// For Parsing Data from frontend to JSON
 app.use(express.json());
 
 // Routes
