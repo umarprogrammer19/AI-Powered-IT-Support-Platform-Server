@@ -1,7 +1,7 @@
 import axios from 'axios';
 import Ticket from "../models/ticket.js";
 
-// Tavus API setup
+// Tavus API setup because using tavus for video generation
 const tavusApiUrl = 'https://api.tavus.com/generate-video';
 const tavusApiKey = process.env.TAVUS_API_KEY;
 
