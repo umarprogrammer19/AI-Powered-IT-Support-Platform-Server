@@ -29,7 +29,7 @@ export const createPaymentIntent = async (req, res) => {
     }
 };
 
-
+// For Handling Payment 
 export const handlePaymentSuccess = async (req, res) => {
     try {
         const { paymentIntentId, userId, plan } = req.body;
