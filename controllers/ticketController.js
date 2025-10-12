@@ -51,6 +51,7 @@ export const uploadScreenshotToTicket = async (req, res) => {
         const ticket = await Ticket.findById(ticketId);
         if (!ticket) return res.status(404).json({ message: 'Ticket not found' });
 
+        // add screenshots into the ticket array
         ticket.screenshots.push(imageData);
         ticket.updatedAt = Date.now();
         await ticket.save();
